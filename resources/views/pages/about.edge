@@ -1,0 +1,165 @@
+@layout({ title: 'About Us - CozyLiving' })
+  @slot('meta')
+    <meta name="description" content="Learn about CozyLiving - Your trusted source for premium home essentials and appliances">
+  @endslot
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {{-- Hero Section --}}
+    <div class="text-center mb-16">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">About CozyLiving</h1>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+        Bringing premium home essentials and appliances to modern homeowners who value quality and comfort
+      </p>
+    </div>
+
+    {{-- Our Story --}}
+    <section class="mb-16">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
+          <div class="space-y-4 text-gray-700 leading-relaxed">
+            <p>
+              CozyLiving was born from a simple belief: your home should be a sanctuary of comfort and style. 
+              We understand that the right products can transform your living space from ordinary to extraordinary.
+            </p>
+            <p>
+              Founded in 2020, we started as a small family business with a passion for quality home products. 
+              What began with kitchen essentials has grown into a comprehensive collection of home appliances and accessories, 
+              serving thousands of homeowners across Indonesia who share our vision for comfortable living.
+            </p>
+            <p>
+              Every product we offer is carefully selected and tested by our team of cooking enthusiasts. 
+              We don't just sell kitchen tools – we curate experiences that make every meal preparation 
+              a moment of creativity and joy.
+            </p>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-amber-100 to-amber-50 rounded-2xl p-8 shadow-xl">
+          <img 
+            src="/images/about-story.jpg" 
+            alt="CozyLiving Story" 
+            class="rounded-lg shadow-lg w-full object-cover h-full"
+            onerror="this.src='https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&h=400&fit=crop'; this.onerror=null;"
+          />
+        </div>
+      </div>
+    </section>
+
+    {{-- Mission & Vision --}}
+    <section class="mb-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-amber-50 rounded-2xl p-8 border-2 border-amber-200">
+          <div class="text-4xl mb-4">🎯</div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Our Mission</h3>
+          <p class="text-gray-700 leading-relaxed">
+            To empower home chefs with premium, reliable kitchen essentials that inspire creativity 
+            and make cooking an enjoyable part of everyday life.
+          </p>
+        </div>
+        <div class="bg-amber-50 rounded-2xl p-8 border-2 border-amber-200">
+          <div class="text-4xl mb-4">🌟</div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Our Vision</h3>
+          <p class="text-gray-700 leading-relaxed">
+            To be Indonesia's most trusted brand for kitchen essentials, known for quality products, 
+            exceptional service, and a community of passionate home chefs.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    {{-- Our Values --}}
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Our Core Values</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition">
+          <div class="text-4xl mb-4">✨</div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3">Quality First</h3>
+          <p class="text-gray-600">
+            We never compromise on quality. Every product meets our rigorous standards before reaching your kitchen.
+          </p>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition">
+          <div class="text-4xl mb-4">🤝</div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3">Customer Centric</h3>
+          <p class="text-gray-600">
+            Your satisfaction drives everything we do. We listen, adapt, and continuously improve based on your feedback.
+          </p>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition">
+          <div class="text-4xl mb-4">🌱</div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3">Sustainability</h3>
+          <p class="text-gray-600">
+            We care about our planet. Our products are sourced responsibly with minimal environmental impact.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    {{-- Why Choose Us --}}
+    <section class="mb-16 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl p-8 md:p-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Why Choose CozyLiving?</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex gap-4">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-amber-600 rounded-full flex items-center justify-center text-white font-bold">1</div>
+          </div>
+          <div>
+            <h3 class="font-bold text-gray-900 mb-2">Premium Quality</h3>
+            <p class="text-gray-700">Handpicked products from trusted manufacturers worldwide</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-amber-600 rounded-full flex items-center justify-center text-white font-bold">2</div>
+          </div>
+          <div>
+            <h3 class="font-bold text-gray-900 mb-2">Expert Curation</h3>
+            <p class="text-gray-700">Every item tested and approved by our quality assurance team</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-amber-600 rounded-full flex items-center justify-center text-white font-bold">3</div>
+          </div>
+          <div>
+            <h3 class="font-bold text-gray-900 mb-2">Fast Delivery</h3>
+            <p class="text-gray-700">Quick shipping to get your tools to you as soon as possible</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-amber-600 rounded-full flex items-center justify-center text-white font-bold">4</div>
+          </div>
+          <div>
+            <h3 class="font-bold text-gray-900 mb-2">Hassle-Free Returns</h3>
+            <p class="text-gray-700">14-day return policy for your peace of mind</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {{-- Call to Action --}}
+    <section class="text-center">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">Ready to Transform Your Home?</h2>
+      <p class="text-lg text-gray-600 mb-8">
+        Join thousands of homeowners who trust CozyLiving for quality products and exceptional service
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a 
+          href="{{ route('home') }}#products" 
+          class="px-8 py-4 bg-amber-600 hover:bg-amber-700 text-white text-lg font-semibold rounded-lg transition shadow-lg hover:shadow-xl"
+        >
+          Shop Now
+        </a>
+        <a 
+          href="{{ route('contact') }}" 
+          class="px-8 py-4 border-2 border-amber-600 text-amber-600 hover:bg-amber-50 text-lg font-semibold rounded-lg transition"
+        >
+          Contact Us
+        </a>
+      </div>
+    </section>
+  </main>
+  @include('partials/footer')
+@end
+

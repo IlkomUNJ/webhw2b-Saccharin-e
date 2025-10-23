@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test POST</title>
+</head>
+<body style="padding: 40px; font-family: sans-serif;">
+  <h1>Test POST Request</h1>
+  
+  <form action="/test-post" method="POST" style="margin: 20px 0;">
+    {{ csrfField() }}
+    <input type="text" name="test" value="hello" />
+    <button type="submit">Test POST</button>
+  </form>
+  
+  <hr />
+  
+  <h2>Test Add to Cart</h2>
+  <form action="/cart" method="POST" style="margin: 20px 0;">
+    {{ csrfField() }}
+    <input type="hidden" name="slug" value="product-1" />
+    <input type="hidden" name="quantity" value="1" />
+    <button type="submit">Add Product 1 to Cart</button>
+  </form>
+  
+  <hr />
+  
+  <h2>Debug Info</h2>
+  <p>CSRF Token present: {{ csrfField() ? 'Yes' : 'No' }}</p>
+</body>
+</html>

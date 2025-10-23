@@ -1,0 +1,219 @@
+@layout({ title: 'Dashboard - CozyLiving' })
+  @slot('meta')
+    <meta name="description" content="Your CozyLiving dashboard">
+  @endslot
+
+  <main class="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50">
+    {{-- Dashboard Header --}}
+    <div class="bg-white border-b border-amber-200 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">Welcome back, {{ user.fullName }}! 👋</h1>
+            <p class="mt-1 text-sm text-gray-600">Browse products, manage your wishlist, and view your orders</p>
+          </div>
+          <div class="hidden sm:flex items-center gap-3">
+            <a href="{{ route('products.index') }}" class="px-4 py-2 text-amber-900 hover:bg-amber-50 rounded-lg font-medium">
+              Browse All Products
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {{-- Search Section --}}
+      <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">🔍 Search Products</h2>
+        
+        <form action="{{ route('dashboard.search') }}" method="GET" class="space-y-4">
+          {{-- Search Input --}}
+          <div>
+            <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+            <input
+              type="text"
+              id="search"
+              name="q"
+              placeholder="Search by name, category, or description..."
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+            />
+          </div>
+
+          {{-- Filters Row --}}
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {{-- Category Filter --}}
+            <div>
+              <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <select
+                id="category"
+                name="category"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              >
+                <option value="">All Categories</option>
+                <option value="Bakeware">Bakeware</option>
+                <option value="Cookware">Cookware</option>
+                <option value="Cutlery">Cutlery</option>
+                <option value="Appliances">Appliances</option>
+                <option value="Storage">Storage</option>
+              </select>
+            </div>
+
+            {{-- Min Price --}}
+            <div>
+              <label for="min_price" class="block text-sm font-medium text-gray-700 mb-2">Min Price ($)</label>
+              <input
+                type="number"
+                id="min_price"
+                name="min_price"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              />
+            </div>
+
+            {{-- Max Price --}}
+            <div>
+              <label for="max_price" class="block text-sm font-medium text-gray-700 mb-2">Max Price ($)</label>
+              <input
+                type="number"
+                id="max_price"
+                name="max_price"
+                min="0"
+                step="0.01"
+                placeholder="999.99"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              />
+            </div>
+          </div>
+
+          {{-- Search Button --}}
+          <div>
+            <button
+              type="submit"
+              class="w-full md:w-auto px-8 py-3 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 transition-colors shadow-md hover:shadow-lg"
+            >
+              Search Products
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {{-- Quick Stats --}}
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <div class="flex items-center gap-4">
+            <div class="p-3 bg-amber-100 rounded-lg">
+              <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Wishlist</p>
+              <p id="wishlist-count" class="text-2xl font-bold text-gray-900">{{ wishlistCount }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <div class="flex items-center gap-4">
+            <div class="p-3 bg-blue-100 rounded-lg">
+              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Orders</p>
+              <p class="text-2xl font-bold text-gray-900">{{ ordersCount }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <div class="flex items-center gap-4">
+            <div class="p-3 bg-green-100 rounded-lg">
+              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Total Spent</p>
+              <p class="text-2xl font-bold text-gray-900">${{ totalSpent.toFixed(2) }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{-- Recent Orders --}}
+      @if(orders && orders.length > 0)
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Recent Orders</h2>
+            <a href="{{ route('orders.index') }}" class="text-amber-600 hover:text-amber-700 font-medium">
+              View All →
+            </a>
+          </div>
+
+          <div class="space-y-4">
+            @each(order in orders)
+              <div class="border border-gray-200 rounded-lg p-4 hover:border-amber-300 transition">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-2">
+                      <span class="text-sm font-medium text-gray-900">Order #{{ order.id }}</span>
+                      @if(order.status === 'pending')
+                        <span class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">Pending</span>
+                      @elseif(order.status === 'processing')
+                        <span class="px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">Processing</span>
+                      @elseif(order.status === 'shipped')
+                        <span class="px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full">Shipped</span>
+                      @elseif(order.status === 'delivered' || order.status === 'completed')
+                        <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Delivered</span>
+                      @elseif(order.status === 'cancelled')
+                        <span class="px-2 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full">Cancelled</span>
+                      @endif
+                    </div>
+                    <p class="text-xs text-gray-500">{{ order.createdAt.toFormat('MMM dd, yyyy') }}</p>
+                    <p class="text-sm text-gray-600 mt-1">{{ order.items.length }} item{{ order.items.length !== 1 ? 's' : '' }}</p>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <div class="text-right">
+                      <p class="text-lg font-bold text-gray-900">${{ order.total.toFixed(2) }}</p>
+                    </div>
+                    <a href="{{ route('orders.show', [order.id]) }}" class="px-4 py-2 text-sm font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition">
+                      View Details
+                    </a>
+                  </div>
+                </div>
+              </div>
+            @end
+          </div>
+        </div>
+      @endif
+
+      {{-- Featured Products --}}
+      <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Featured Products</h2>
+          <a href="{{ route('products.index') }}" class="text-amber-600 hover:text-amber-700 font-medium">
+            View All →
+          </a>
+        </div>
+
+        @if(products.length > 0)
+          <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            @each(product in products)
+              @!component('components/product/card', { product })
+            @end
+          </div>
+        @else
+          <div class="text-center py-12">
+            <p class="text-gray-500">No products available</p>
+          </div>
+        @endif
+      </div>
+    </div>
+  </main>
+  
+  @include('partials/footer')
+@end

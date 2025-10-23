@@ -1,0 +1,98 @@
+@let(className = 'group rounded-xl overflow-hidden border border-slate-200/60 bg-white text-slate-700 shadow-sm hover:shadow-md hover:border-amber-200/80 focus-within:ring-2 focus-within:ring-amber-200 transition-all duration-200 h-full flex flex-col')
+
+<div {{$props.merge({class: [className]}).except(['product']).toAttrs()}}>
+    <a href="{{ route('products.show', { slug: product.slug }) }}" class="relative block bg-gray-100 overflow-hidden">
+        <img 
+          src="{{ product.image }}" 
+          alt="{{ product.title }}" 
+          class="w-full h-56 sm:h-64 lg:h-72 xl:h-80 object-cover transform group-hover:scale-105 transition-transform duration-300 ease-out"
+          loading="lazy"
+          onerror="this.src='https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&h=800&fit=crop&q=80'; this.onerror=null;"
+        />
+        <div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
+        @if(product.category)
+          <span class="absolute top-3 left-3 px-3 py-1 bg-amber-600 text-white text-xs font-semibold rounded-full shadow-md">
+            {{ product.category }}
+          </span>
+        @endif
+        @if(typeof product.stock !== 'undefined' && product.stock !== null && product.stock > 0 && product.stock <= 3)
+          <span class="absolute bottom-3 left-3 px-2 py-0.5 bg-red-600 text-white text-[10px] font-semibold rounded-full shadow">
+            Low stock
+          </span>
+        @endif
+        
+        {{-- Wishlist Button - Only show for authenticated users --}}
+        @if(auth?.isAuthenticated && auth?.user)
+          <button 
+            onclick="toggleWishlist(event, '{{ product.slug }}')"
+            data-slug="{{ product.slug }}"
+            class="wishlist-btn absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white hover:scale-110 ring-1 ring-black/5 hover:ring-black/10 transition-all duration-200"
+            title="Add to wishlist"
+          >
+            <svg class="w-5 h-5 text-gray-400 wishlist-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+        @endif
+    </a>
+    <div class="p-5 sm:p-6 lg:p-7 flex-1 flex flex-col">
+        <h2 class="mb-3 text-lg sm:text-xl lg:text-2xl font-bold leading-tight line-clamp-2 transition-colors group-hover:text-amber-700">
+            {{product.title}}
+        </h2>
+        <p class="mb-4 text-sm sm:text-base lg:text-lg text-neutral-500 line-clamp-3 flex-1">
+            {{product.summary}}
+        </p>
+        
+        {{-- Price + stock --}}
+        <div class="mb-4 flex items-center justify-between">
+          <span class="text-2xl sm:text-3xl font-bold text-amber-600">
+            ${{ product.price.toFixed(2) }}
+          </span>
+          @if(typeof product.stock !== 'undefined' && product.stock !== null)
+            @if(product.stock > 10)
+              <span class="text-xs font-medium text-green-600">In stock</span>
+            @elseif(product.stock > 0)
+              <span class="text-xs font-medium text-yellow-600">Low stock</span>
+            @else
+              <span class="text-xs font-medium text-red-600">Out of stock</span>
+            @endif
+          @endif
+        </div>
+        
+        {{-- Actions --}}
+  <div class="mt-auto grid grid-cols-1 gap-3">
+          <form action="/cart" method="POST" class="w-full">
+            {{ csrfField() }}
+            <input type="hidden" name="slug" value="{{ product.slug }}" />
+            <input type="hidden" name="quantity" value="1" />
+            @if(typeof product.stock !== 'undefined' && product.stock === 0)
+              <button 
+                type="submit" 
+                class="w-full px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white text-base sm:text-lg font-semibold rounded-lg transition shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled aria-disabled="true"
+              >
+                Add to Cart
+              </button>
+            @else
+              <button 
+                type="submit" 
+                class="w-full px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white text-base sm:text-lg font-semibold rounded-lg transition shadow-sm hover:shadow-md"
+              >
+                Add to Cart
+              </button>
+            @endif
+          </form>
+          
+          <a 
+            href="{{ route('products.show', { slug: product.slug }) }}" 
+            class="w-full px-6 py-3 border-2 border-amber-600 text-amber-700 hover:bg-amber-50 text-base sm:text-lg font-semibold rounded-lg transition inline-flex items-center justify-center"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            View Product
+          </a>
+        </div>
+    </div>
+</div>

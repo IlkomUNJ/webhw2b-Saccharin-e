@@ -1,0 +1,151 @@
+@let(pageTitle = 'Manage Orders')
+
+@!component('components/layout/index', { pageTitle })
+  <div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="mb-8">
+        <a href="{{ route('seller.dashboard.index') }}" class="text-blue-600 hover:text-blue-700 mb-4 inline-flex items-center">
+          <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Dashboard
+        </a>
+        <h1 class="text-3xl font-bold text-gray-900 mt-4">Manage Orders</h1>
+        <p class="mt-2 text-gray-600">View and manage all customer orders</p>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="bg-white rounded-lg shadow-sm mb-6">
+        <div class="border-b border-gray-200">
+          <nav class="flex space-x-8 px-6" aria-label="Tabs">
+            <a href="{{ route('seller.orders.index') }}" class="border-b-2 {{ currentStatus === '' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} py-4 px-1 text-sm font-medium">
+              All Orders
+            </a>
+            <a href="{{ route('seller.orders.index') }}?status=pending" class="border-b-2 {{ currentStatus === 'pending' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} py-4 px-1 text-sm font-medium">
+              Pending
+            </a>
+            <a href="{{ route('seller.orders.index') }}?status=processing" class="border-b-2 {{ currentStatus === 'processing' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} py-4 px-1 text-sm font-medium">
+              Processing
+            </a>
+            <a href="{{ route('seller.orders.index') }}?status=shipped" class="border-b-2 {{ currentStatus === 'shipped' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} py-4 px-1 text-sm font-medium">
+              Shipped
+            </a>
+            <a href="{{ route('seller.orders.index') }}?status=delivered" class="border-b-2 {{ currentStatus === 'delivered' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} py-4 px-1 text-sm font-medium">
+              Delivered
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Orders Table -->
+      @if(orders.length === 0)
+        <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No orders found</h3>
+          <p class="mt-1 text-sm text-gray-500">{{ currentStatus ? 'No orders with this status' : 'You haven\'t received any orders yet' }}</p>
+        </div>
+      @else
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                @each(order in orders)
+                  @let(statusColors = {
+                    pending: 'bg-yellow-100 text-yellow-800',
+                    processing: 'bg-blue-100 text-blue-800',
+                    shipped: 'bg-purple-100 text-purple-800',
+                    delivered: 'bg-green-100 text-green-800',
+                    cancelled: 'bg-red-100 text-red-800'
+                  })
+                  @let(statusColor = statusColors[order.status] || 'bg-gray-100 text-gray-800')
+                  
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm font-medium text-gray-900">#{{ order.id }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm text-gray-900">{{ order.createdAt.toFormat('MMM dd, yyyy') }}</div>
+                      <div class="text-xs text-gray-500">{{ order.createdAt.toFormat('HH:mm') }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {{ order.items.length }} item{{ order.items.length !== 1 ? 's' : '' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm font-medium text-gray-900">${{ order.total }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm text-gray-900 capitalize">{{ order.paymentMethod.replace('_', ' ') }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ statusColor }}">
+                        {{ order.status }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <a href="{{ route('seller.orders.show', [order.id]) }}" class="text-blue-600 hover:text-blue-900">
+                        View Details
+                      </a>
+                    </td>
+                  </tr>
+                @endeach
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          @if(orders.hasPages)
+            <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="flex-1 flex justify-between sm:hidden">
+                  @if(orders.hasPreviousPage)
+                    <a href="{{ orders.previousPageUrl }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                      Previous
+                    </a>
+                  @endif
+                  @if(orders.hasNextPage)
+                    <a href="{{ orders.nextPageUrl }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                      Next
+                    </a>
+                  @endif
+                </div>
+                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                  <div>
+                    <p class="text-sm text-gray-700">
+                      Showing <span class="font-medium">{{ orders.firstPage }}</span> to <span class="font-medium">{{ orders.lastPage }}</span> of <span class="font-medium">{{ orders.total }}</span> results
+                    </p>
+                  </div>
+                  <div class="flex gap-2">
+                    @if(orders.hasPreviousPage)
+                      <a href="{{ orders.previousPageUrl }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Previous
+                      </a>
+                    @endif
+                    @if(orders.hasNextPage)
+                      <a href="{{ orders.nextPageUrl }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Next
+                      </a>
+                    @endif
+                  </div>
+                </div>
+              </div>
+            </div>
+          @endif
+        </div>
+      @endif
+    </div>
+  </div>
+  @include('partials/footer')

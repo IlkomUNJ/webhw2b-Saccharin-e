@@ -1,0 +1,371 @@
+@layout()
+  @slot('meta')
+    <meta name="description" content="Your Shopping Cart - CozyLiving">
+  @endslot
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      {{-- Cart Items Section --}}
+      <div class="lg:col-span-2 space-y-4">
+        
+        @if(summary.totalItems > 0)
+          {{-- Select All Checkbox --}}
+          <div class="bg-white rounded-lg border border-gray-200 p-4">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" id="select-all-checkbox" class="w-5 h-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500" />
+              <span class="text-sm font-medium text-gray-700">Select All ({{ cartItems.length }} vendors)</span>
+            </label>
+          </div>
+
+          {{-- Cart Items Grouped by Vendor --}}
+          @each((group, index) in cartItems)
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            
+            {{-- Vendor Header --}}
+            <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-200">
+              <input type="checkbox" class="vendor-checkbox w-5 h-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500" data-vendor-id="vendor-{{ index }}" />
+              <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <span class="font-semibold text-gray-900">{{ group.vendor }}</span>
+            </div>
+
+            {{-- Vendor Items --}}
+            @each(item in group.items)
+              <div class="flex items-start gap-4 p-4 border-b border-gray-100 last:border-b-0">
+                
+                {{-- Checkbox --}}
+                <input type="checkbox" class="item-checkbox mt-2 w-5 h-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500" data-vendor-id="vendor-{{ index }}" data-item-id="{{ item.slug }}" data-price="{{ item.price }}" data-quantity="{{ item.quantity }}" />
+                
+                {{-- Product Image --}}
+                @if(item.discount)
+                  <div class="relative flex-shrink-0">
+                    <img src="{{ item.image }}" alt="{{ item.name }}" class="w-20 h-20 object-cover rounded-lg" />
+                    <span class="absolute -top-2 -left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                      {{ item.discount }}%
+                    </span>
+                  </div>
+                @else
+                  <img src="{{ item.image }}" alt="{{ item.name }}" class="flex-shrink-0 w-20 h-20 object-cover rounded-lg" />
+                @endif
+
+                {{-- Product Details --}}
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-sm text-gray-800 mb-1 line-clamp-2">{{ item.name }}</h3>
+                  
+                  @if(item.variant)
+                    <p class="text-xs text-gray-500 mb-2">{{ item.variant }}</p>
+                  @endif
+
+                  {{-- Actions Row --}}
+                  <div class="flex items-center gap-3 mt-3">
+                    {{-- Wishlist --}}
+                    <button type="button" class="text-gray-400 hover:text-red-500 transition" title="Add to wishlist">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                    </button>
+
+                    {{-- Delete --}}
+                    <form action="/cart/{{ item.slug }}/delete" method="POST" class="inline">
+                      {{ csrfField() }}
+                      <button type="submit" class="text-gray-400 hover:text-red-500 transition" title="Remove from cart">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </form>
+                  </div>
+                </div>
+
+                {{-- Price and Quantity --}}
+                <div class="flex flex-col items-end gap-2">
+                  <div class="text-right">
+                    @if(item.originalPrice)
+                      <p class="text-xs text-gray-400 line-through">${{ item.originalPrice.toFixed(2) }}</p>
+                    @endif
+                    <p class="text-base font-bold text-gray-900">${{ item.price.toFixed(2) }}</p>
+                  </div>
+
+                  {{-- Quantity Controls --}}
+                  <div class="flex items-center gap-2 bg-gray-50 rounded-lg px-2 py-1">
+                    {{-- Decrease Quantity --}}
+                    <form action="/cart/{{ item.slug }}/update" method="POST" class="inline">
+                      {{ csrfField() }}
+                      <input type="hidden" name="quantity" value="{{ item.quantity - 1 }}" />
+                      <button type="submit" class="text-gray-600 hover:text-gray-800 w-6 h-6 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed" {{ item.quantity <= 1 ? 'disabled' : '' }}>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                        </svg>
+                      </button>
+                    </form>
+                    
+                    <span class="w-8 text-center text-sm font-medium">{{ item.quantity }}</span>
+                    
+                    {{-- Increase Quantity --}}
+                    <form action="/cart/{{ item.slug }}/update" method="POST" class="inline">
+                      {{ csrfField() }}
+                      <input type="hidden" name="quantity" value="{{ item.quantity + 1 }}" />
+                      <button type="submit" class="text-gray-600 hover:text-gray-800 w-6 h-6 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            @end
+          </div>
+        @end
+        
+        @else
+          {{-- Empty Cart Message --}}
+          <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
+            <svg class="mx-auto w-24 h-24 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Your cart is empty</h3>
+            <p class="text-gray-500 mb-6">Add some products to get started!</p>
+            <a href="{{ route('home') }}" class="inline-flex items-center px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg transition">
+              Continue Shopping
+            </a>
+          </div>
+        @endif
+      </div>
+
+      {{-- Order Summary --}}
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg border border-gray-200 p-6 sticky top-24">
+          <h2 class="text-lg font-bold text-gray-900 mb-4">Order Summary</h2>
+          
+          <div class="space-y-3 mb-6">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Total (<span id="summary-item-count">0</span> <span id="summary-item-label">items</span>)</span>
+              <span class="font-medium text-gray-900" id="summary-subtotal">$0.00</span>
+            </div>
+          </div>
+
+          <div class="border-t border-gray-200 pt-4 mb-6">
+            <div class="flex justify-between items-center">
+              <span class="text-base font-semibold text-gray-900">Grand Total</span>
+              <span class="text-xl font-bold text-gray-900" id="summary-total">$0.00</span>
+            </div>
+          </div>
+
+          {{-- Promo Section --}}
+          @if(summary.totalItems > 0)
+            <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <div class="flex items-start gap-3">
+                <span class="text-2xl">👛</span>
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-amber-900">Have a promo code?</p>
+                  <button type="button" class="text-sm text-amber-700 hover:text-amber-800 font-medium mt-1 flex items-center gap-1">
+                    Apply promo
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          @endif
+
+          {{-- Checkout Button --}}
+          @if(auth?.isAuthenticated)
+            @if(summary.totalItems > 0)
+              <a 
+                href="{{ route('orders.checkout') }}" 
+                class="block w-full py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition text-center"
+              >
+                Proceed to Checkout
+              </a>
+            @else
+              <button 
+                type="button" 
+                class="w-full py-3 bg-gray-300 text-gray-500 font-semibold rounded-lg cursor-not-allowed"
+                disabled
+              >
+                Cart is Empty
+              </button>
+            @endif
+          @else
+            <a 
+              href="{{ route('login') }}" 
+              class="block w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition text-center"
+            >
+              Login to Checkout
+            </a>
+          @endif
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  @slot('scripts')
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('Cart page JavaScript loaded');
+        
+        // Confirm before deleting items
+        const deleteForms = document.querySelectorAll('form[action*="cart/"][action*="DELETE"]');
+        
+        deleteForms.forEach(form => {
+          form.addEventListener('submit', function(e) {
+            if (!confirm('Are you sure you want to remove this item from your cart?')) {
+              e.preventDefault();
+            }
+          });
+        });
+
+        // Checkbox functionality
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        const vendorCheckboxes = document.querySelectorAll('.vendor-checkbox');
+        const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+        const checkoutButton = document.getElementById('checkout-button');
+
+        console.log('Found elements:', {
+          selectAllCheckbox,
+          vendorCheckboxesCount: vendorCheckboxes.length,
+          itemCheckboxesCount: itemCheckboxes.length,
+          checkoutButton
+        });
+
+        // Load saved checkbox states from sessionStorage
+        function loadCheckboxStates() {
+          const savedStates = sessionStorage.getItem('cartCheckboxStates');
+          if (savedStates) {
+            try {
+              const states = JSON.parse(savedStates);
+              itemCheckboxes.forEach(cb => {
+                const itemId = cb.dataset.itemId;
+                if (states[itemId]) {
+                  cb.checked = true;
+                }
+              });
+              // Update vendor checkboxes based on item states
+              vendorCheckboxes.forEach(vendorCb => {
+                const vendorId = vendorCb.dataset.vendorId;
+                const vendorItems = document.querySelectorAll(`.item-checkbox[data-vendor-id="${vendorId}"]`);
+                const allChecked = Array.from(vendorItems).every(cb => cb.checked);
+                vendorCb.checked = allChecked;
+              });
+              updateSelectAllCheckbox();
+              updateCheckoutButton();
+            } catch (e) {
+              console.error('Error loading checkbox states:', e);
+            }
+          }
+        }
+
+        // Save checkbox states to sessionStorage
+        function saveCheckboxStates() {
+          const states = {};
+          itemCheckboxes.forEach(cb => {
+            if (cb.checked) {
+              states[cb.dataset.itemId] = true;
+            }
+          });
+          sessionStorage.setItem('cartCheckboxStates', JSON.stringify(states));
+        }
+
+        // Select all functionality
+        if (selectAllCheckbox) {
+          selectAllCheckbox.addEventListener('change', function() {
+            const isChecked = this.checked;
+            vendorCheckboxes.forEach(cb => cb.checked = isChecked);
+            itemCheckboxes.forEach(cb => cb.checked = isChecked);
+            updateCheckoutButton();
+            saveCheckboxStates();
+          });
+        }
+
+        // Vendor checkbox functionality
+        vendorCheckboxes.forEach(vendorCheckbox => {
+          vendorCheckbox.addEventListener('change', function() {
+            const vendorId = this.dataset.vendorId;
+            const vendorItems = document.querySelectorAll(`.item-checkbox[data-vendor-id="${vendorId}"]`);
+            vendorItems.forEach(cb => cb.checked = this.checked);
+            updateSelectAllCheckbox();
+            updateCheckoutButton();
+            saveCheckboxStates();
+          });
+        });
+
+        // Item checkbox functionality
+        itemCheckboxes.forEach(itemCheckbox => {
+          itemCheckbox.addEventListener('change', function() {
+            const vendorId = this.dataset.vendorId;
+            const vendorCheckbox = document.querySelector(`.vendor-checkbox[data-vendor-id="${vendorId}"]`);
+            const vendorItems = document.querySelectorAll(`.item-checkbox[data-vendor-id="${vendorId}"]`);
+            const allChecked = Array.from(vendorItems).every(cb => cb.checked);
+            const someChecked = Array.from(vendorItems).some(cb => cb.checked);
+            
+            if (vendorCheckbox) {
+              vendorCheckbox.checked = allChecked;
+              vendorCheckbox.indeterminate = someChecked && !allChecked;
+            }
+            
+            updateSelectAllCheckbox();
+            updateCheckoutButton();
+            saveCheckboxStates();
+          });
+        });
+
+        function updateSelectAllCheckbox() {
+          if (!selectAllCheckbox) return;
+          
+          const allChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
+          const someChecked = Array.from(itemCheckboxes).some(cb => cb.checked);
+          
+          selectAllCheckbox.checked = allChecked;
+          selectAllCheckbox.indeterminate = someChecked && !allChecked;
+        }
+
+        function updateCheckoutButton() {
+          const selectedCheckboxes = Array.from(itemCheckboxes).filter(cb => cb.checked);
+          const selectedCount = selectedCheckboxes.length;
+          
+          // Calculate totals for selected items
+          let totalQuantity = 0;
+          let subtotal = 0;
+          
+          selectedCheckboxes.forEach(cb => {
+            const price = parseFloat(cb.dataset.price) || 0;
+            const quantity = parseInt(cb.dataset.quantity) || 0;
+            totalQuantity += quantity;
+            subtotal += price * quantity;
+          });
+          
+          // Update order summary
+          const summaryItemCount = document.getElementById('summary-item-count');
+          const summaryItemLabel = document.getElementById('summary-item-label');
+          const summarySubtotal = document.getElementById('summary-subtotal');
+          const summaryTotal = document.getElementById('summary-total');
+          
+          if (summaryItemCount) summaryItemCount.textContent = totalQuantity;
+          if (summaryItemLabel) summaryItemLabel.textContent = totalQuantity === 1 ? 'item' : 'items';
+          if (summarySubtotal) summarySubtotal.textContent = '$' + subtotal.toFixed(2);
+          if (summaryTotal) summaryTotal.textContent = '$' + subtotal.toFixed(2);
+          
+          // Update checkout button
+          if (checkoutButton && selectedCount > 0) {
+            checkoutButton.disabled = false;
+            checkoutButton.textContent = `Checkout (${selectedCount})`;
+          } else if (checkoutButton) {
+            checkoutButton.disabled = true;
+            checkoutButton.textContent = 'Select items to checkout';
+          }
+        }
+        
+        // Load saved checkbox states on page load
+        loadCheckboxStates();
+      });
+    </script>
+  @endslot
+  
+  @include('partials/footer')
+@end

@@ -1,0 +1,107 @@
+@layout()
+  @slot('meta')
+    <meta name="description" content="Welcome to CozyLiving - Premium Home Essentials & Appliances">
+  @endslot
+  
+  {{-- Hero Section --}}
+  <section class="relative h-[500px] md:h-[600px] flex items-center justify-center overflow-hidden">
+    {{-- Background Image with Overlay --}}
+    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('/images/hero-background.jpg');">
+      {{-- Fallback gradient if image not found --}}
+      <div class="absolute inset-0 bg-gradient-to-r from-amber-900/80 via-amber-800/70 to-amber-900/80"></div>
+    </div>
+    
+    {{-- Hero Content --}}
+    <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+      <h1 class="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-6 drop-shadow-2xl">
+        Live Better, Live Cozy.
+      </h1>
+      <p class="text-xl sm:text-2xl text-white/95 mb-8 drop-shadow-lg font-medium">
+        Premium home essentials and appliances for modern living
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a 
+          href="#products" 
+          class="px-8 py-4 bg-amber-500 hover:bg-amber-600 text-white text-lg font-semibold rounded-lg transition shadow-lg hover:shadow-xl transform hover:scale-105"
+        >
+          Shop Now
+        </a>
+        <a 
+          href="{{ route('about') }}" 
+          class="px-8 py-4 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white text-lg font-semibold rounded-lg transition border-2 border-white/50"
+        >
+          Learn More
+        </a>
+      </div>
+    </div>
+
+    {{-- Decorative Wave --}}
+    <div class="absolute bottom-0 left-0 right-0 -mb-1">
+      <svg class="w-full h-16 md:h-24" viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z" fill="#fafaf9"></path>
+      </svg>
+    </div>
+  </section>
+  
+  {{-- User Welcome Banner (for authenticated users) --}}
+  @if(auth?.isAuthenticated && auth?.user)
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl shadow-xl p-6 md:p-8 text-white">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl md:text-3xl font-bold mb-2">Welcome back, {{ auth.user?.fullName || 'User' }}! 👋</h2>
+            <p class="text-white/90 text-lg">
+              @if(auth.user?.role === 'seller')
+                Manage your store and track your sales from your dashboard
+              @else
+                Discover new products and manage your wishlist
+              @endif
+            </p>
+          </div>
+          <div class="flex gap-3">
+            @if(auth.user?.role === 'seller')
+              <a href="{{ route('seller.dashboard.index') }}" class="px-6 py-3 bg-white text-amber-600 font-semibold rounded-lg hover:bg-amber-50 transition shadow-md whitespace-nowrap">
+                Go to Dashboard
+              </a>
+            @else
+              <a href="{{ route('dashboard.index') }}" class="px-6 py-3 bg-white text-amber-600 font-semibold rounded-lg hover:bg-amber-50 transition shadow-md whitespace-nowrap">
+                Go to Dashboard
+              </a>
+            @endif
+          </div>
+        </div>
+      </div>
+    </section>
+  @endif
+
+  {{-- Featured Products Section --}}
+  <main id="products" class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-12">
+    <div class="mb-12 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Featured Products</h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">Discover our handpicked selection of premium kitchen essentials</p>
+    </div>
+
+    {{-- Product Grid: Limited to 5 products (1 row) --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 lg:gap-8 xl:gap-10">
+      @each (product in products.slice(0, 5))
+        @product.card({ product })
+        @end
+      @end
+    </div>
+
+    {{-- View All Products Button --}}
+    <div class="mt-12 text-center">
+      <a 
+        href="{{ route('products.index') }}" 
+        class="inline-flex items-center gap-2 px-8 py-4 bg-amber-600 hover:bg-amber-700 text-white text-lg font-semibold rounded-lg transition shadow-md hover:shadow-lg"
+      >
+        View All Products
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </a>
+    </div>
+  </main>
+  
+  @include('partials/footer')
+@end
